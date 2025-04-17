@@ -7,13 +7,13 @@ import streamlit as sl
 import pandas as pd
 import time
 
-#params [J1, J2, n1, n2, k, b, T]
-params = []
-def dx1(x1,x2): #pochodna y
+#params [J, n, k, b, T]
+def dx1(x1,x2):
     return x2
 
-def dx2(x1,x2):
-    return (params[6][0]*params[3]/params[2]-params[4]*x1-params[5]*x2)/(params[0]*np.power(params[3]/params[2], 2)+params[1])
+def dx2(params, n, x1, x2):
+    dx2 = (params[4][n]*params[1]-params[2]*x1-params[3]*x2)/(params[0])
+    return dx2
 
 def Euler(time_axis):
     
@@ -21,29 +21,43 @@ def Euler(time_axis):
     rng = np.random.default_rng()
     for i in range(3):
         some_data.append(rng.random()*5)
-        print(some_data)
     chart_data = pd.DataFrame(
         {"output": some_data}, time_axis
     )
-    sl.line_chart(chart_data)
-    print(chart_data)
     return chart_data
 
-def Runge_Kutta(paramsRK, x, y):
+def Runge_Kutta(paramsRK, x1, x2):
+    
+    time = [0]
+
     params=paramsRK
-    h = 0.1
-    for n in range(100):
-        x.append(x[n] + h)
-        k1 = h*f(x[n], y[n])
-        k2 = h*f(x[n]+h/2, y[n]+k1/2)
-        k3 = h*f(x[n]+h/2, y[n]+k2/2)
-        k4 = h*f(x[n]+h, y[n]+k3)
+    h = 0.05
+    for n in range(1000):
         
-        dyn = 1/6*(k1+2*k2+2*k3+k4)
-        y.append(y[n] + dyn)
-        chart_data = pd.DataFrame(
-            y, x
-        )
+        k1_x1 = h*x2[n]
+        k1_x2 = h * dx2(params, n, x1[n], x2[n])
+
+        k2_x1 = h*(x2[n]+k1_x2/2)
+        k2_x2 = h*dx2(params, n, x1[n]+k1_x1/2, x2[n]+k1_x2/2)
+
+        k3_x1 = h*(x2[n] + k2_x2/2)
+        k3_x2 = h*dx2(params, n, x1[n]+k2_x1/2, x2[n]+k2_x2/2)
+
+        k4_x1 = h*(x2[n] + k3_x2/2)
+        k4_x2 = h*dx2(params, n, x2[n]+k3_x2, x2[n]+k3_x2/2)
+        
+        ddx1 = 1/6*(k1_x1+2*k2_x1+2*k3_x1+k4_x1)
+        ddx2 = 1/6*(k1_x2+2*k2_x2+2*k3_x2+k4_x2)
+
+        x1.append(x1[n] + ddx1)
+        x2.append(x2[n] + ddx2)
+        
+        time.append((n+1)*h)
+
+    chart_data = pd.DataFrame(
+        x2, index=time
+    )
+    sl.line_chart(chart_data)
     return chart_data 
 
 def waiting():
