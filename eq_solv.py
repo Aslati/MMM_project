@@ -15,8 +15,8 @@ def Euler(params, x1, x2):
 
     time = [0]
     
-    h = 0.05
-    for n in range(1000):
+    h = 0.01
+    for n in range(len(params[4])):
         x1E.append(x1E[n]+h*x2E[n])
         x2E.append(x2E[n]+h*dx2(params, n, x1E[n], x2E[n]))
         time.append((n+1)*h)
@@ -30,8 +30,8 @@ def Runge_Kutta(paramsRK, x1, x2):
 
     time = [0]
     params=paramsRK
-    h = 0.05
-    for n in range(1000):
+    h = 0.01
+    for n in range(len(params[4])):
         
         k1_x1 = h*x2RK[n]
         k1_x2 = h*dx2(params, n, x1RK[n], x2RK[n])
@@ -54,18 +54,3 @@ def Runge_Kutta(paramsRK, x1, x2):
         time.append((n+1)*h)
         
     return x1RK, x2RK, time
-
-def waiting():
-    'Starting a long computation...'
-
-   # Add a placeholder
-    latest_iteration = sl.empty()
-    bar = sl.progress(0)
-
-    for i in range(100):
-        # Update the progress bar with each iteration.
-        latest_iteration.text(f'Iteration {i+1}')
-        bar.progress(i + 1)
-        time.sleep(0.1)
-
-    '...and now we\'re done!'
