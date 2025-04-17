@@ -1,11 +1,7 @@
 import os
 import numpy as np
-import matplotlib.pyplot as plt
 import streamlit as sl
 import pandas as pd
-import control as cl
-import scipy as sc
-import control.matlab as cmtl
 import zipfile
 from eq_solv import Euler, Runge_Kutta
 
@@ -23,35 +19,31 @@ n1 = sidebar_frame.text_input("n1:")
 n2 = sidebar_frame.text_input("n2:")
 k = sidebar_frame.text_input("k:")
 b = sidebar_frame.text_input("b:")
-T = [1]
-for i in range(1000):
-    T.append(0)
 
-signal_type = sidebar_frame.selectbox("Sygnał", ['trójkątny', 'prostokątny', 'harmoniczny'])
+
+signal_type = sidebar_frame.selectbox("Sygnał", ['impuls', 'trójkątny', 'prostokątny', 'harmoniczny'])
 #sidebar_frame_form = sl.sidebar.form("Własności sygnału")
 
-x1 = [0]
-x2 = [0]
+x1E = [0]
+x2E = [0]
 
-# Runge_Kutta(x, y,)
-
-# chart = pd.DataFrame(
-#     Runge_Kutta(x,y,f)[1], Runge_Kutta(x,y,f)[0]
-# )
-
-# #sl.line_chart(chart)
+x1RK = [0]
+x2RK = [0]
 
 match signal_type:
     case 'prostokątny':
         fill = sidebar_frame.slider("Wypełnienie:", 1, 100)
     case 'harmoniczny':
         fill = sidebar_frame.slider("Wypełnienie:", 1, 100)
+    case 'impuls':
+        amp = sidebar_frame.slider("Amplituda:", 1, 10)
 
-#T = []
+T = [amp]
+for i in range(1000):
+    T.append(0)
 
 euler_data=pd.DataFrame()
 rk_data = pd.DataFrame()
-
 
 def csv_for_download(data, name):
     #file = data.to_csv().encode("utf-8")
@@ -65,8 +57,25 @@ if sidebar_frame.button("Symuluj"):
         J = nnum[2]*np.power(n, 2)+nnum[3]
     params = [J, n, nnum[4], nnum[5], T]
 
-    euler_data = Euler(time_axis)
-    rk_data = Runge_Kutta(params, x1, x2)
+    euler = Euler(params, x1E, x2E)
+    rk = Runge_Kutta(params, x1RK, x2RK)
+
+    time = rk[2]
+
+    chart_data = pd.DataFrame(
+        {'x1E': euler[0], 'x2E': euler[1], 
+         'x1RK': rk[0], 'x2RK': rk[1]},
+         index=time
+    )
+    sl.line_chart(chart_data, y=["x1E", "x2E", "x1RK", "x2RK"],
+         color=["#c72ac7", "#2ac76b", "#b72ac7", "#2ac798"])
+
+    euler_data=pd.DataFrame(
+        {'x1(E)':euler[0], 'x2(E)': euler[1]}, index=time
+    )
+    rk_data=pd.DataFrame(
+        {'x1(RK)':rk[0], 'x2(RK)': rk[1]}, index=time
+    )
 
     csv_for_download(euler_data, 'euler_data.csv')
     csv_for_download(rk_data, 'runge_kutter_data.csv')
