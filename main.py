@@ -25,7 +25,7 @@ n2 = sidebar_frame.text_input("n2:")
 k = sidebar_frame.text_input("k:")
 b = sidebar_frame.text_input("b:")
 
-signal_type = sidebar_frame.selectbox("Sygnał", ['impuls', 'trójkątny', 'prostokątny', 'harmoniczny'])
+signal_type = sidebar_frame.selectbox("Sygnał", ['impuls', 'trójkątny', 'prostokątny', 'harmoniczny', 'skok'])
 
 x1E = [0]
 x2E = [0]
@@ -44,9 +44,12 @@ match signal_type:
         amp = sidebar_frame.slider("Amplituda:", 1, 10)
         offset = sidebar_frame.slider("Offset:", -10, 10)
     case 'harmoniczny':
-        fill = sidebar_frame.slider("Wypełnienie:", 1, 100)
+        freq = sidebar_frame.select_slider("Częstotliwość [Hz]:", [1, 5, 25, 40, 50])
         amp = sidebar_frame.slider("Amplituda:", 1, 10)
+        offset = sidebar_frame.slider("Offset:", -10, 10)
     case 'impuls':
+        amp = sidebar_frame.slider("Amplituda:", 1, 10)
+    case 'skok':
         amp = sidebar_frame.slider("Amplituda:", 1, 10)
 
 
@@ -69,26 +72,28 @@ if sidebar_frame.button("Symuluj"):
             number_of_period_points = (1/freq)/0.01
             number_of_high_points = number_of_period_points*(fill/100)
             T = []
-            # t = np.linspace(0, 1, 100, endpoint=False)
-            # sqaure_signal = pd.DataFrame(
-            #     signal.square(2 * np.pi * freq * t, duty=fill/100)
-            # )
-            # sl.line_chart(sqaure_signal)
-            for i in range(int(np.rint(4001/number_of_period_points))):
-                for j in range(int(np.rint(number_of_high_points))):
+            for i in range(int(4001/number_of_period_points)):
+                for j in range(int(number_of_high_points)):
                     T.append(amp+offset)
-                for j in range(int(np.rint(number_of_period_points-number_of_high_points))):
+                for j in range(int(number_of_period_points-number_of_high_points)):
                     T.append(0+offset)
+        case 'harmoniczny':
+            number_of_period_points = int((1/freq)/0.01)
+            particles = 2*np.pi/number_of_period_points
+            T = []
+            for i in range(int(4001/number_of_period_points)):
+                for j in range(number_of_period_points):
+                    T.append(np.sin(j*particles)+offset)
         case 'trójkątny':
             number_of_period_points = (1/freq)/0.01
             number_of_one_side_points = int(number_of_period_points/4)
-            T = [0]
+            T = [0+offset]
             for j in range (number_of_one_side_points):
-                T.append(T[j]+amp/number_of_one_side_points)
+                T.append(T[j]+np.abs((amp+offset)/number_of_one_side_points))
             for j in range (2*number_of_one_side_points):
-                T.append(T[number_of_one_side_points+j]-amp/number_of_one_side_points)
+                T.append(T[number_of_one_side_points+j]-np.abs((amp+offset)/number_of_one_side_points))
             for j in range (number_of_one_side_points-1):
-                T.append(T[j+3*number_of_one_side_points]+amp/number_of_one_side_points)
+                T.append(T[j+3*number_of_one_side_points]+np.abs((amp+offset)/number_of_one_side_points))
             T_part = T
             for i in range(int(4000/number_of_period_points)):
                 T = np.concatenate((T, T_part), axis=None)
@@ -96,6 +101,10 @@ if sidebar_frame.button("Symuluj"):
             T = [amp]
             for i in range(4000):
                 T.append(0)
+        case 'skok':
+            T = []
+            for i in range(4001):
+                T.append(amp)
     
     params = [J, n, nnum[4], nnum[5], T]
 
