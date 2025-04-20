@@ -9,48 +9,42 @@ def dx2(params, n, x1, x2):
     return dx2
 
 def Euler(params, x1, x2):
-    
-    x1E = x1
-    x2E = x2
 
     time = [0]
     
-    h = 0.01
+    h = 0.001
     for n in range(len(params[4])):
-        x1E.append(x1E[n]+h*x2E[n])
-        x2E.append(x2E[n]+h*dx2(params, n, x1E[n], x2E[n]))
+        x1.append(x1[n]+h*x2[n])
+        x2.append(x2[n]+h*dx2(params, n, x1[n], x2[n]))
         time.append((n+1)*h)
 
-    return x1E, x2E
+    return x1, x2
 
 def Runge_Kutta(paramsRK, x1, x2):
-    
-    x1RK=x1
-    x2RK=x2
 
     time = [0]
     params=paramsRK
     h = 0.01
     for n in range(len(params[4])):
         
-        k1_x1 = h*x2RK[n]
-        k1_x2 = h*dx2(params, n, x1RK[n], x2RK[n])
+        k1_x1 = h*x2[n]
+        k1_x2 = h*dx2(params, n, x1[n], x2[n])
 
-        k2_x1 = h*(x2RK[n]+k1_x2/2)
-        k2_x2 = h*dx2(params, n, x1RK[n]+k1_x1/2, x2RK[n]+k1_x2/2)
+        k2_x1 = h*(x2[n]+k1_x2/2)
+        k2_x2 = h*dx2(params, n, x1[n]+k1_x1/2, x2[n]+k1_x2/2)
 
-        k3_x1 = h*(x2RK[n] + k2_x2/2)
-        k3_x2 = h*dx2(params, n, x1RK[n]+k2_x1/2, x2RK[n]+k2_x2/2)
+        k3_x1 = h*(x2[n] + k2_x2/2)
+        k3_x2 = h*dx2(params, n, x1[n]+k2_x1/2, x2[n]+k2_x2/2)
 
-        k4_x1 = h*(x2RK[n] + k3_x2/2)
-        k4_x2 = h*dx2(params, n, x2RK[n]+k3_x2, x2RK[n]+k3_x2/2)
+        k4_x1 = h*(x2[n] + k3_x2/2)
+        k4_x2 = h*dx2(params, n, x2[n]+k3_x2, x2[n]+k3_x2/2)
         
         ddx1 = 1/6*(k1_x1+2*k2_x1+2*k3_x1+k4_x1)
         ddx2 = 1/6*(k1_x2+2*k2_x2+2*k3_x2+k4_x2)
 
-        x1RK.append(x1RK[n] + ddx1)
-        x2RK.append(x2RK[n] + ddx2)
+        x1.append(x1[n] + ddx1)
+        x2.append(x2[n] + ddx2)
         
         time.append((n+1)*h)
         
-    return x1RK, x2RK, time
+    return x1, x2, time

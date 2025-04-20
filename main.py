@@ -4,6 +4,8 @@ import streamlit as sl
 import pandas as pd
 import zipfile
 import time
+from scipy import signal
+import matplotlib.pyplot as plt
 from eq_solv import Euler, Runge_Kutta
 
 sl.set_page_config(page_title="Project", page_icon="♥", layout="centered", initial_sidebar_state="auto", menu_items=None)
@@ -23,10 +25,7 @@ n2 = sidebar_frame.text_input("n2:")
 k = sidebar_frame.text_input("k:")
 b = sidebar_frame.text_input("b:")
 
-
 signal_type = sidebar_frame.selectbox("Sygnał", ['impuls', 'trójkątny', 'prostokątny', 'harmoniczny'])
-#signal_len = sidebar_frame.slider("Długość symulacji:", 100, 10000)
-#sidebar_frame_form = sl.sidebar.form("Własności sygnału")
 
 x1E = [0]
 x2E = [0]
@@ -36,9 +35,14 @@ x2RK = [0]
 
 match signal_type:
     case 'prostokątny':
-        fill = sidebar_frame.select_slider("Wypełnienie [%]:", [25, 50, 75, 100])
-        freq = sidebar_frame.select_slider("Częstotliwość [Hz]:", [10, 20, 30, 40, 50])
+        fill = sidebar_frame.select_slider("Wypełnienie [%]:", [25, 50, 75])
+        freq = sidebar_frame.select_slider("Częstotliwość [Hz]:", [1, 5, 10, 25, 50])
         amp = sidebar_frame.slider("Amplituda:", 1, 10)
+        offset = sidebar_frame.slider("Offset:", -10, 10)
+    case 'trójkątny':
+        freq = sidebar_frame.select_slider("Częstotliwość [Hz]:", [1, 5, 25, 40, 50])
+        amp = sidebar_frame.slider("Amplituda:", 1, 10)
+        offset = sidebar_frame.slider("Offset:", -10, 10)
     case 'harmoniczny':
         fill = sidebar_frame.slider("Wypełnienie:", 1, 100)
         amp = sidebar_frame.slider("Amplituda:", 1, 10)
@@ -46,12 +50,10 @@ match signal_type:
         amp = sidebar_frame.slider("Amplituda:", 1, 10)
 
 
-
 euler_data=pd.DataFrame()
 rk_data = pd.DataFrame()
 
 def csv_for_download(data, name):
-    #file = data.to_csv().encode("utf-8")
     data.to_csv(name, index=None, sep=",", header=True, encoding='utf-8-sig')
 
 if sidebar_frame.button("Symuluj"):
@@ -64,19 +66,35 @@ if sidebar_frame.button("Symuluj"):
 
     match signal_type: #make the signal table
         case 'prostokątny':
-            #signaltable = np.array([amp, freq]).astype(np.int8)
             number_of_period_points = (1/freq)/0.01
             number_of_high_points = number_of_period_points*(fill/100)
             T = []
+            # t = np.linspace(0, 1, 100, endpoint=False)
+            # sqaure_signal = pd.DataFrame(
+            #     signal.square(2 * np.pi * freq * t, duty=fill/100)
+            # )
+            # sl.line_chart(sqaure_signal)
             for i in range(int(np.rint(4001/number_of_period_points))):
                 for j in range(int(np.rint(number_of_high_points))):
-                    T.append(amp)
+                    T.append(amp+offset)
                 for j in range(int(np.rint(number_of_period_points-number_of_high_points))):
-                    T.append(0)
-            print(T)
+                    T.append(0+offset)
+        case 'trójkątny':
+            number_of_period_points = (1/freq)/0.01
+            number_of_one_side_points = int(number_of_period_points/4)
+            T = [0]
+            for j in range (number_of_one_side_points):
+                T.append(T[j]+amp/number_of_one_side_points)
+            for j in range (2*number_of_one_side_points):
+                T.append(T[number_of_one_side_points+j]-amp/number_of_one_side_points)
+            for j in range (number_of_one_side_points-1):
+                T.append(T[j+3*number_of_one_side_points]+amp/number_of_one_side_points)
+            T_part = T
+            for i in range(int(4000/number_of_period_points)):
+                T = np.concatenate((T, T_part), axis=None)
         case 'impuls':
             T = [amp]
-            for i in range(4001):
+            for i in range(4000):
                 T.append(0)
     
     params = [J, n, nnum[4], nnum[5], T]
@@ -102,11 +120,10 @@ if sidebar_frame.button("Symuluj"):
     )
 
     signal = pd.DataFrame(
-        T, index=time[:len(T)]
+        T[:200], index=time[:200]
     )
 
-    sl.line_chart(chart_data, y=["Θ1_E", "Θ2_E", "Θ1_RK", "Θ2_RK"],
-         color=["#c72ac7", "#2ac76b", "#b72ac7", "#2ac798"])
+    sl.line_chart(chart_data, y=["Θ1_E", "Θ2_E", "Θ1_RK", "Θ2_RK"])
     
     sl.line_chart(signal)
 
