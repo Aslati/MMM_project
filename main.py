@@ -5,6 +5,7 @@ import pandas as pd
 import zipfile
 import time
 import matplotlib.pyplot as plt
+
 from eq_solv import Euler, Runge_Kutta
 
 sl.set_page_config(page_title="Project", page_icon="♥", layout="centered", initial_sidebar_state="auto", menu_items=None)
@@ -13,14 +14,14 @@ sidebar_frame=sl.sidebar
 
 sidebar_frame.image('image.png')
 
-J1 = sidebar_frame.number_input("J1:", min_value=0.5, value=1.0, step=0.5)
-J2 = sidebar_frame.number_input("J2:", min_value=0.5, value=1.0, step=0.5)
-n1 = sidebar_frame.number_input("n1:", min_value=0.5, value=1.0, step=0.5)
-n2 = sidebar_frame.number_input("n2:", min_value=0.5, value=1.0, step=0.5)
-k = sidebar_frame.number_input("k:", min_value=0.5, value=1.0, step=0.5)
-b = sidebar_frame.number_input("b:", min_value=0.5, value=1.0, step=0.5)
+J1 = sidebar_frame.number_input(r"$J_1$:", min_value=0.5, value=1.0, step=0.5)
+J2 = sidebar_frame.number_input(r"$J_2$:", min_value=0.5, value=1.0, step=0.5)
+n1 = sidebar_frame.number_input(r"$n_1$:", min_value=0.5, value=1.0, step=0.5)
+n2 = sidebar_frame.number_input(r"$n_2$:", min_value=0.5, value=1.0, step=0.5)
+k = sidebar_frame.number_input(r"$k$:", min_value=0.5, value=1.0, step=0.5)
+b = sidebar_frame.number_input(r"$b$:", min_value=0.5, value=1.0, step=0.5)
 
-signal_type = sidebar_frame.selectbox("Sygnał", ['impuls', 'trójkątny', 'prostokątny', 'harmoniczny', 'skok'])
+signal_type = sidebar_frame.selectbox("Sygnał", ['impuls', 'skok', 'harmoniczny', 'prostokątny', 'trójkątny'])
 
 x1E = [0]
 x2E = [0]
@@ -120,8 +121,8 @@ if sidebar_frame.button("Symuluj"):
     # my_bar.empty()
 
     chart_data = pd.DataFrame(
-        {'Θ1_E': euler[0], 'Θ2_E': euler[1], 
-        'Θ1_RK': rk[0], 'Θ2_RK': rk[1]},
+        {r"$\theta_{2_E}$": euler[0], r"$\frac{d \theta_{2_E}}{dt}$": euler[1], 
+        r"$\theta_{2_RK}$": rk[0], r"$\frac{d \theta_{2_RK}}{dt}$": rk[1]},
         index=timeT
     )
 
@@ -129,15 +130,15 @@ if sidebar_frame.button("Symuluj"):
         T[:200], index=timeT[:200]
     )
 
-    sl.line_chart(chart_data, y=["Θ1_E", "Θ2_E", "Θ1_RK", "Θ2_RK"])
+    sl.line_chart(chart_data, y=[r"$\theta_{2_E}$", r"$\frac{d \theta_{2_E}}{dt}$", r"$\theta_{2_RK}$", r"$\frac{d \theta_{2_RK}}{dt}$"])
         
     sl.line_chart(signal)
 
     euler_data=pd.DataFrame(
-        {'Θ1(E)':euler[0], 'Θ2(E)': euler[1]}, index=timeT
+        {r"$\theta_{2_E}$":euler[0], r"$\frac{d \theta_{2_E}}{dt}$": euler[1]}, index=timeT
     )
     rk_data=pd.DataFrame(
-        {'Θ1(RK)':rk[0], 'Θ2(RK)': rk[1]}, index=timeT
+        {r"$\theta_{2_RK}$":rk[0], r"$\frac{d \theta_{2_RK}}{dt}$": rk[1]}, index=timeT
     )
 
     csv_for_download(euler_data, 'euler_data.csv')
