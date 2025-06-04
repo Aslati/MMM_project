@@ -1,0 +1,64 @@
+\documentclass[12pt, a4paper]{article}
+\title{Sprawozdanie z projektu, Metody modelowania matematycznego}
+\author{Joanna Jabczyńska, s198075}
+\date{May, 2025}
+
+\usepackage{graphicx}
+\usepackage{tcolorbox}
+\usepackage[polish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+% --- \usepackage{fancyhdr}
+% --- \pagestyle{fancy}
+
+\begin{document}
+\maketitle
+% --- \thispagestyle{fancy}
+\section* {Polecenie - zadanie 4.}
+Dany jest układ mechaniczny przedstawiony na poniższym rysunku:
+
+\includegraphics[width=\textwidth]{image}
+Należy wyprowadzić model układu oraz zaimplementować go w symulacji. Symulator
+powinien umożliwiać pobudzenie układu przynajmniej trzema rodzajami synagłów
+wejściowych (prostokąny o skończonym czasie trwania, trójkątny, harmoniczny). Symulator
+powinien umożliwiać zmianę wszystkich parametrów układu oraz sygnałów wejściowych.
+Należy użyć metody Rungego-Kutty 4-go rzędu oraz metody Eulera oraz na wspólnym
+wykresie pokazać wyniki symulacji (prędkości i położenia wału J2) z obu tych metod.
+
+\section*{Założenia projektu}
+\subsection{Potrzebne obliczenia}
+
+\[J_e = J_1*{(\frac{n_1}{n_2})}^2+J_2\]
+\[k_e = k*{(\frac{n_1}{n_2})}^2\]
+
+
+\[J_e*\ddot{\phi_2}+b*\dot{\phi_2}+k_e*{\phi_2}=T*\frac{n_2}{n_1}\]
+
+\[x_1 = \phi_2\]
+\[\dot{x_1} = x_2\]
+\[\dot{x_2} = \ddot{\phi_2}\]
+
+\[J_e*\dot{x_2}+b*x_2+k_e*x_1=T*\frac{n_2}{n_1}\]
+\[\dot{x_2} = \frac{T*\frac{n_2}{n_1}-b*x_2-k_e*x_1}{J_e}\]
+
+\subsection{Potrzebne elementy kodu}
+	\begin{itemize}
+		\item Funkcje implemetujące metody numeryczne: Eulera i Rundego-Kutty 4-go rzędu
+		\item Wizualizacja wyników
+		\item Interakcja użytkownika z parametrami obiektu i sygnału wejściowego
+		\item Pobieranie danych wyjściowych przez użytkownika w pliku .csv
+	\end{itemize}
+\subsection{Realizacja techniczna}
+	\begin{enumerate}
+		\item Wykorzystanie języka Python ze względu na jego prostotę
+		\item Skorzystanie z bibliotek:
+			\begin{itemize}
+				\item NumPy - operacje i stałe matematyczne oraz wartości funkcji sinus
+				\item Streamlit - wizualizacja danych wyjściowych oraz stworzenie interfejsu graficznego użytkownika
+				\item Pandas - przechowywanie i organizacja danych obliczeniowych
+				\item Zipfile - pakowanie plików .csv w plik .zip, aby umożliwić pobranie przez użytkownika
+			\end{itemize}
+	\end{enumerate}
+\section*{Wnioski projektu}
+\end{document}

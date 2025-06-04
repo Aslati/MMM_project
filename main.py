@@ -3,8 +3,6 @@ import numpy as np
 import streamlit as sl
 import pandas as pd
 import zipfile
-import time
-import matplotlib.pyplot as plt
 
 from eq_solv import Euler, Runge_Kutta
 
@@ -57,9 +55,8 @@ def csv_for_download(data, name):
 if sidebar_frame.button("Symuluj"):
 
     n = n2/n1
-    J = J1*np.power(n, 2)+J2
+    J = J1*(n**2)+J2
     params = [J, n, k, b]
-    proceed = True
 
     match signal_type: #make the signal table
         case 'prostokątny':
@@ -111,18 +108,9 @@ if sidebar_frame.button("Symuluj"):
     euler = Euler(params, x1E, x2E, h)
     rk = Runge_Kutta(params, x1RK, x2RK, h)
 
-    # progress_text = "Operation in progress. Please wait." #pure aesthetics
-    # my_bar = sl.progress(0, text=progress_text)
-
-    # for percent_complete in range(100):
-        #     time.sleep(0.01)
-        #     my_bar.progress(percent_complete + 1, text=progress_text)
-    # time.sleep(1)
-    # my_bar.empty()
-
     chart_data = pd.DataFrame(
-        {r"$\theta_{2_E}$": euler[0], r"$\frac{d \theta_{2_E}}{dt}$": euler[1], 
-        r"$\theta_{2_RK}$": rk[0], r"$\frac{d \theta_{2_RK}}{dt}$": rk[1]},
+        {"Położenie wału 2, metoda Eulera": euler[0], "Prędkość wału 2, metoda Eulera": euler[1], 
+        "Położenie wału 2, metoda RK4": rk[0], "Prędkość wału 2, metoda RK4": rk[1]},
         index=timeT
     )
 
@@ -130,15 +118,15 @@ if sidebar_frame.button("Symuluj"):
         T[:200], index=timeT[:200]
     )
 
-    sl.line_chart(chart_data, y=[r"$\theta_{2_E}$", r"$\frac{d \theta_{2_E}}{dt}$", r"$\theta_{2_RK}$", r"$\frac{d \theta_{2_RK}}{dt}$"])
+    sl.line_chart(chart_data, y=[r"Położenie wału 2, metoda Eulera", r"Prędkość wału 2, metoda Eulera", r"Położenie wału 2, metoda RK4", r"Prędkość wału 2, metoda RK4"])
         
     sl.line_chart(signal)
 
     euler_data=pd.DataFrame(
-        {r"$\theta_{2_E}$":euler[0], r"$\frac{d \theta_{2_E}}{dt}$": euler[1]}, index=timeT
+        {r"Położenie wału 2, metoda Eulera":euler[0], r"Prędkość wału 2, metoda Eulera": euler[1]}, index=timeT
     )
     rk_data=pd.DataFrame(
-        {r"$\theta_{2_RK}$":rk[0], r"$\frac{d \theta_{2_RK}}{dt}$": rk[1]}, index=timeT
+        {r"Położenie wału 2, metoda RK4":rk[0], r"Prędkość wału 2, metoda RK4": rk[1]}, index=timeT
     )
 
     csv_for_download(euler_data, 'euler_data.csv')
