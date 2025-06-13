@@ -12,12 +12,12 @@ sidebar_frame=sl.sidebar
 
 sidebar_frame.image('image.png')
 
-J1 = sidebar_frame.number_input(r"$J_1$:", min_value=0.5, value=1.0, step=0.5)
-J2 = sidebar_frame.number_input(r"$J_2$:", min_value=0.5, value=1.0, step=0.5)
-n1 = sidebar_frame.number_input(r"$n_1$:", min_value=0.5, value=1.0, step=0.5)
-n2 = sidebar_frame.number_input(r"$n_2$:", min_value=0.5, value=1.0, step=0.5)
-k = sidebar_frame.number_input(r"$k$:", min_value=0.5, value=1.0, step=0.5)
-b = sidebar_frame.number_input(r"$b$:", min_value=0.5, value=1.0, step=0.5)
+J1 = sidebar_frame.number_input(r"$J_1$:", min_value=0.0, value=1.0, step=0.5)
+J2 = sidebar_frame.number_input(r"$J_2$:", min_value=0.0, value=1.0, step=0.5)
+n1 = sidebar_frame.number_input(r"$n_1$:", min_value=0.0, value=1.0, step=1.0)
+n2 = sidebar_frame.number_input(r"$n_2$:", min_value=0.0, value=1.0, step=1.0)
+k = sidebar_frame.number_input(r"$k$:", min_value=0.0, value=1.0, step=0.5)
+b = sidebar_frame.number_input(r"$b$:", min_value=0.0, value=1.0, step=0.5)
 
 signal_type = sidebar_frame.selectbox("Sygnał", ['impuls', 'skok', 'harmoniczny', 'prostokątny', 'trójkątny'])
 

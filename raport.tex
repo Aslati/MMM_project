@@ -29,18 +29,18 @@ wykresie pokazać wyniki symulacji (prędkości i położenia wału J2) z obu ty
 \section*{Założenia projektu}
 \subsection{Potrzebne obliczenia}
 
-\[J_e = J_1*{(\frac{n_1}{n_2})}^2+J_2\]
-\[k_e = k*{(\frac{n_1}{n_2})}^2\]
+\[J_e = J_1{\cdot}{(\frac{n_1}{n_2})}^2+J_2\]
+\[k_e = k{\cdot}{(\frac{n_1}{n_2})}^2\]
 
 
-\[J_e*\ddot{\phi_2}+b*\dot{\phi_2}+k_e*{\phi_2}=T*\frac{n_2}{n_1}\]
+\[J_e{\cdot}\ddot{\phi_2}+b{\cdot}\dot{\phi_2}+k_e{\cdot}{\phi_2}=T{\cdot}\frac{n_2}{n_1}\]
 
 \[x_1 = \phi_2\]
 \[\dot{x_1} = x_2\]
 \[\dot{x_2} = \ddot{\phi_2}\]
 
-\[J_e*\dot{x_2}+b*x_2+k_e*x_1=T*\frac{n_2}{n_1}\]
-\[\dot{x_2} = \frac{T*\frac{n_2}{n_1}-b*x_2-k_e*x_1}{J_e}\]
+\[J_e{\cdot}\dot{x_2}+b{\cdot}x_2+k_ex_1=T{\cdot}\frac{n_2}{n_1}\]
+\[\dot{x_2} = \frac{T{\cdot}\frac{n_2}{n_1}-b{\cdot}x_2-k_e{\cdot}x_1}{J_e}\]
 
 \subsection{Potrzebne elementy kodu}
 	\begin{itemize}
@@ -61,8 +61,21 @@ wykresie pokazać wyniki symulacji (prędkości i położenia wału J2) z obu ty
 			\end{itemize}
 	\end{enumerate}
 \section*{Wnioski projektu}
-\begin{itemize}
-\item Obie metody dają bliskozbieżne wyniki dla różniczkowania $\dot{\phi_2}$ (prędkość wału), jednak potrafi wskazywać rozbieżność o stałą dla położenia wału.
-\item Metoda Eulera wymaga mniejszej liczby operacji, jest zatem bardziej oszczędna
-\end{itemize}
+	\begin{itemize}
+		\item Obie metody dają bliskozbieżne wyniki dla różniczkowania $\dot{\phi_2}$ (prędkość wału), jednak potrafi wskazywać rozbieżność o stałą dla położenia wału.
+		\item Metoda Eulera wymaga mniejszej liczby operacji, jest zatem bardziej oszczędna
+	\end{itemize}
+\subsection{Wpływ parametrów układu}
+	\begin{itemize}
+		\item \emph{b} (tłumienie): Wygaszenie tłumienia (wartość parametru równa 0) 
+		\item \emph{b} Wziększenie tłumienia powoduje stabilizowanie się sygnałów wyjściowych wokół określonej wartości. 
+		\item \emph{k} (sprężystość): Wziększenie współczynnika sprężystości powoduje zwiększenie się amplitudy elementów harmonicznych 
+		\item \emph{J} (bezwładność): Zwiększenie bezwładności powoduje spowolnienie układu (zwiększenie się stałej czasowej)
+		\item \emph{n} Zwiększenie stosunku $\frac{n_1}{n_2}$ powoduje zanikanie charakterystyki harmonicznej, zaś zwiększenie wzmaga oscylacje i spowalnia ich zanikanie
+	\end{itemize}
+\subsection{Wpływ parametrów sygnału}
+	\begin{itemize}
+		\item Zwiększenie częstotliwości sygnału powoduje wypłaszczenie się krzywej położenia wału
+		\item Zwiększenie amplitudy powoduje wzrost wartości maksymalnej
+	\end{itemize}
 \end{document}
